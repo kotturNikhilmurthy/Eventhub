@@ -7,6 +7,11 @@ dotenv.config();
 
 const app = express();
 
+const extraOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 // Enhanced CORS configuration to support multiple dev origins
 app.use(cors({
   origin: (origin, callback) => {
@@ -16,11 +21,16 @@ app.use(cors({
       || origin.startsWith('http://10.')
       || origin.startsWith('http://192.168.');
 
-    if (allowed) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS blocked from origin: ${origin}`));
+    if (!allowed && origin) {
+      if (extraOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked from origin: ${origin}`));
+      }
+      return;
     }
+
+    callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

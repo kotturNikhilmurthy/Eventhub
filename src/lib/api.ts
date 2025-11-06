@@ -1,5 +1,6 @@
 // Frontend API utility for connecting to MongoDB backend
-const API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:4000/api';
 
 export interface Event {
   id?: string;
@@ -51,7 +52,7 @@ export interface Booking {
 
 class ApiService {
   private async request(endpoint: string, options: RequestInit = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
+  const url = `${API_BASE_URL}${endpoint}`;
     const config = {
       headers: {
         'Content-Type': 'application/json',
